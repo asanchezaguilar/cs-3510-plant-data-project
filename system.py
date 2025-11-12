@@ -34,7 +34,7 @@ class PlantIRS():
     def add_plant(self, plant):
         self._plant_list.append(plant)
 
-    def average(self):
+    def average(self, attribute):
         pass
     
     def print_plants(self):
