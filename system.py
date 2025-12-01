@@ -3,6 +3,7 @@ import csv
 import matplotlib
 matplotlib.use("Agg") 
 import matplotlib.pyplot as plt
+import statistics
 
 
 class PlantIRS():
@@ -39,13 +40,41 @@ class PlantIRS():
     def add_plant(self, plant):
         self._plant_list.append(plant)
 
-    def average(self, attribute):
-        plant_count = 0
-        attribute_value_count = 0
+    def summarize_attribute(self, attribute):
+        values = []
+
         for plant in self._plant_list:
-            plant_count += 1
-            attribute_value_count += getattr(plant, attribute)
-        return attribute_value_count/plant_count
+            values.append(getattr(plant, attribute))
+
+        count = len(values)
+        mean = statistics.mean(values)
+        median = statistics.median(values)
+        stdev = statistics.pstdev(values)   # population standard deviation
+        minimum = min(values)
+        maximum = max(values)
+
+        return count, mean, median, stdev, minimum, maximum
+
+    def average_by_health_status(self, attribute):
+        groups = {}
+
+        for plant in self._plant_list:
+            status = plant.plant_health_status
+            value = getattr(plant, attribute)
+
+            if status not in groups:
+                groups[status] = []
+            groups[status].append(value)
+
+        results = {}
+        for status in groups:
+            values = groups[status]
+            avg = sum(values) / len(values)
+            results[status] = avg
+
+        return results
+
+
 
     
     def print_plants(self):
@@ -78,6 +107,46 @@ class PlantIRS():
         plt.tight_layout()
         plt.savefig("plot.png", dpi=150, bbox_inches="tight")
         print("Saved plot to plot.png")
+
+    def correlation_graph(self, attr1, attr2):
+        x_values = []
+        y_values = []
+
+        for plant in self._plant_list:
+            x_values.append(getattr(plant, attr1))
+            y_values.append(getattr(plant, attr2))
+
+        mean_x = statistics.mean(x_values)
+        mean_y = statistics.mean(y_values)
+
+        num = 0
+        denom_x = 0
+        denom_y = 0
+
+        for i in range(len(x_values)):
+            dx = x_values[i] - mean_x
+            dy = y_values[i] - mean_y
+            num += dx * dy
+            denom_x += dx * dx
+            denom_y += dy * dy
+
+        r = num / ((denom_x * denom_y) ** 0.5)
+
+        plt.figure()
+        plt.scatter(x_values, y_values, marker="o")
+
+        x_label = attr1.replace("_", " ").title()
+        y_label = attr2.replace("_", " ").title()
+
+        plt.title(f"{y_label} vs {x_label} (r = {r:.3f})")
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
+        plt.tight_layout()
+        plt.savefig("plot.png", dpi=150, bbox_inches="tight")
+
+        print("Saved correlation plot to plot.png")
+        print(f"Correlation between {x_label} and {y_label}: {r}")
+
 
 
 
