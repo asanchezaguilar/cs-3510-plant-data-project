@@ -178,7 +178,7 @@ class Interface():
 
                         first = "-1"
                         while first != "0":
-                            first = input(("Choose the FIRST attribute (x-axis):\n"
+                            first = input(("Choose the first attribute (x-axis):\n"
                                            "[1] - Soil Moisture\n"
                                            "[2] - Ambient Temperature\n"
                                            "[3] - Soil Temperature\n"
@@ -202,7 +202,7 @@ class Interface():
 
                             second = "-1"
                             while second != "0":
-                                second = input(("Choose the SECOND attribute (y-axis):\n"
+                                second = input(("Choose the second attribute (y-axis):\n"
                                                 "[1] - Soil Moisture\n"
                                                 "[2] - Ambient Temperature\n"
                                                 "[3] - Soil Temperature\n"
