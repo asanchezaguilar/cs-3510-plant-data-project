@@ -173,7 +173,8 @@ class Interface():
                             "8": "phosphorus_level",
                             "9": "potassium_level",
                             "10": "chlorophyll_content",
-                            "11": "electrochemical_signal"
+                            "11": "electrochemical_signal",
+                            "12": "plant_health_status"
                         }
 
                         first = "-1"
@@ -190,6 +191,7 @@ class Interface():
                                            "[9] - Potassium Level\n"
                                            "[10] - Chlorophyll Content\n"
                                            "[11] - Electrochemical Signal\n"
+                                           "[12] - Plant Stress"
                                            "[0] - Go Back\n"))
 
                             if first == "0":
@@ -214,6 +216,7 @@ class Interface():
                                                 "[9] - Potassium Level\n"
                                                 "[10] - Chlorophyll Content\n"
                                                 "[11] - Electrochemical Signal\n"
+                                                "[12] - Plant Stress"
                                                 "[0] - Go Back\n"))
 
                                 if second == "0":

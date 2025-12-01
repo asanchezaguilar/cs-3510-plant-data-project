@@ -49,7 +49,7 @@ class PlantIRS():
         count = len(values)
         mean = statistics.mean(values)
         median = statistics.median(values)
-        stdev = statistics.pstdev(values)   # population standard deviation
+        stdev = statistics.pstdev(values)   
         minimum = min(values)
         maximum = max(values)
 
@@ -93,7 +93,6 @@ class PlantIRS():
             print(f"No data found for Plant ID {plant_id}")
             return
 
-        # sorts by timestamp if needed
         try:
             time_stamp_list, attribute_list = zip(*sorted(zip(time_stamp_list, attribute_list)))
         except Exception:
@@ -112,9 +111,24 @@ class PlantIRS():
         x_values = []
         y_values = []
 
+        def convert_health(value):
+            if value == "Healthy":
+                return 0
+            elif value == "Moderate Stress":
+                return 1
+            elif value == "High Stress":
+                return 2
+            return value
+
         for plant in self._plant_list:
-            x_values.append(getattr(plant, attr1))
-            y_values.append(getattr(plant, attr2))
+            x = getattr(plant, attr1)
+            y = getattr(plant, attr2)
+
+            x = convert_health(x)
+            y = convert_health(y)
+
+            x_values.append(x)
+            y_values.append(y)
 
         mean_x = statistics.mean(x_values)
         mean_y = statistics.mean(y_values)
@@ -130,22 +144,40 @@ class PlantIRS():
             denom_x += dx * dx
             denom_y += dy * dy
 
-        r = num / ((denom_x * denom_y) ** 0.5)
+        if denom_x == 0 or denom_y == 0:
+            r = 0
+            m = 0
+            b = mean_y
+        else:
+            r = num / ((denom_x * denom_y) ** 0.5)
+            m = num / denom_x
+            b = mean_y - m * mean_x
 
-        plt.figure()
-        plt.scatter(x_values, y_values, marker="o")
+        
+        x_min = min(x_values)
+        x_max = max(x_values)
+        x_line = [x_min, x_max]
+        y_line = [m * x_min + b, m * x_max + b]
 
+        
         x_label = attr1.replace("_", " ").title()
         y_label = attr2.replace("_", " ").title()
+
+        plt.figure()
+        plt.scatter(x_values, y_values)
+        plt.plot(x_line, y_line, color="red")
 
         plt.title(f"{y_label} vs {x_label} (r = {r:.3f})")
         plt.xlabel(x_label)
         plt.ylabel(y_label)
         plt.tight_layout()
         plt.savefig("plot.png", dpi=150, bbox_inches="tight")
+        plt.close()
 
         print("Saved correlation plot to plot.png")
         print(f"Correlation between {x_label} and {y_label}: {r}")
+
+
 
 
 
